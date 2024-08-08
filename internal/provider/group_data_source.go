@@ -26,6 +26,7 @@ type groupDataSourceModel struct {
 // do I really have to do this
 type groupSearchResult struct {
 	Name        string
+	ID          string
 	Description string
 }
 

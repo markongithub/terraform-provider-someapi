@@ -30,6 +30,7 @@ type groupResource struct {
 
 type groupResourceModel struct {
 	Name        types.String `tfsdk:"name"`
+	ID          types.String `tfsdk:"id"`
 	Description types.String `tfsdk:"description"`
 	LastUpdated types.String `tfsdk:"last_updated"`
 }
@@ -70,6 +71,9 @@ func (r *groupResource) Schema(_ context.Context, _ resource.SchemaRequest, resp
 			"name": schema.StringAttribute{
 				MarkdownDescription: "Example identifer",
 				Required:            true,
+			},
+			"id": schema.StringAttribute{
+				Computed: true,
 			},
 			"description": schema.StringAttribute{
 				MarkdownDescription: "Example configurable attribute",
@@ -131,6 +135,7 @@ func (r *groupResource) Create(ctx context.Context, req resource.CreateRequest, 
 		)
 		return
 	}
+	plan.ID = types.StringValue(groupReturned.ID)
 	plan.Name = types.StringValue(groupReturned.Name)
 	plan.Description = types.StringValue(groupReturned.Description)
 	plan.LastUpdated = types.StringValue(time.Now().Format(time.RFC850))
@@ -195,12 +200,13 @@ func (r *groupResource) Update(ctx context.Context, req resource.UpdateRequest, 
 
 	postData, _ := json.Marshal(map[string]interface{}{
 		"operation":   "ADD",
+		"id":          plan.ID.ValueString(),
 		"name":        plan.Name.ValueString(),
 		"description": plan.Description.ValueString(),
 	})
 
 	// won't work if you want to rename the ord. need to store and use the ID.
-	_, err := r.client.Post(ctx, fmt.Sprintf("/groups/%s/update", plan.Name.ValueString()), postData, "204 No Content")
+	_, err := r.client.Post(ctx, fmt.Sprintf("/groups/%s/update", plan.ID.ValueString()), postData, "204 No Content")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating group",
@@ -245,7 +251,7 @@ func (r *groupResource) Delete(ctx context.Context, req resource.DeleteRequest, 
 
 	var emptyPostData []byte
 
-	_, err := r.client.Post(ctx, fmt.Sprintf("/groups/%s/delete", state.Name.ValueString()), emptyPostData, "204 No Content")
+	_, err := r.client.Post(ctx, fmt.Sprintf("/groups/%s/delete", state.ID.ValueString()), emptyPostData, "204 No Content")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error deleting group",
