@@ -9,9 +9,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
-func lookupGroupByName(ctx context.Context, client *APIClient, name string) (*groupDataSourceModel, error) {
+// the identifier can be a name OR an ID, but ID is unique
+func lookupGroupByIdentifier(ctx context.Context, client *APIClient, identifier string) (*groupDataSourceModel, error) {
 	readData, _ := json.Marshal(map[string]interface{}{
-		"group_identifier": name,
+		"group_identifier": identifier,
 		"record_offset":    0,
 		"record_size":      10,
 	})
@@ -27,6 +28,7 @@ func lookupGroupByName(ctx context.Context, client *APIClient, name string) (*gr
 	}
 	return &groupDataSourceModel{
 		Name:        types.StringValue(groupReturned.Name),
+		ID:          types.StringValue(groupReturned.ID),
 		Description: types.StringValue(groupReturned.Description),
 	}, nil
 }

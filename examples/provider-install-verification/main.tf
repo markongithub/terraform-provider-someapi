@@ -28,5 +28,5 @@ output "description" {
 
 resource "someapi_group" "other" {
   name        = "tfgroup"
-  description = "I made this with Terraform"
+  description = "I made this with Terraform and then I changed it"
 }

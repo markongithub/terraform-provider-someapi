@@ -20,6 +20,7 @@ type groupDataSource struct {
 
 type groupDataSourceModel struct {
 	Name        types.String `tfsdk:"name"`
+	ID          types.String `tfsdk:"id"`
 	Description types.String `tfsdk:"description"`
 }
 
@@ -47,6 +48,10 @@ func (d *groupDataSource) Schema(_ context.Context, _ datasource.SchemaRequest, 
 			},
 			"description": schema.StringAttribute{
 				MarkdownDescription: "Example configurable attribute",
+				Computed:            true,
+			},
+			"id": schema.StringAttribute{
+				MarkdownDescription: "ID generated on the server side",
 				Computed:            true,
 			},
 		},
@@ -78,7 +83,7 @@ func (d *groupDataSource) Read(ctx context.Context, req datasource.ReadRequest, 
 	tflog.Trace(ctx, "Entered groupDataSource.Read")
 	var state groupDataSourceModel
 	resp.Diagnostics.Append(req.Config.Get(ctx, &state)...)
-	lookupResult, err := lookupGroupByName(ctx, d.client, state.Name.ValueString())
+	lookupResult, err := lookupGroupByIdentifier(ctx, d.client, state.Name.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error looking up group",
