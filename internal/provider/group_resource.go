@@ -8,6 +8,8 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
@@ -74,6 +76,9 @@ func (r *groupResource) Schema(_ context.Context, _ resource.SchemaRequest, resp
 			},
 			"id": schema.StringAttribute{
 				Computed: true,
+				PlanModifiers: []planmodifier.String{
+					stringplanmodifier.UseStateForUnknown(),
+				},
 			},
 			"description": schema.StringAttribute{
 				MarkdownDescription: "Example configurable attribute",
@@ -194,9 +199,6 @@ func (r *groupResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	var plan groupResourceModel
 	diags := req.Plan.Get(ctx, &plan)
 	resp.Diagnostics.Append(diags...)
-	var state groupResourceModel
-	diags = req.State.Get(ctx, &state)
-	resp.Diagnostics.Append(diags...)
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -208,14 +210,14 @@ func (r *groupResource) Update(ctx context.Context, req resource.UpdateRequest, 
 		"description": plan.Description.ValueString(),
 	})
 
-	if state.ID.ValueString() == "" {
+	if plan.ID.ValueString() == "" {
 		resp.Diagnostics.AddError(
 			"Failed to calculate update URL",
-			"The state passed into the Update function did not include the group ID.",
+			"The plan passed into the Update function did not include the group ID.",
 		)
 		return
 	}
-	_, err := r.client.Post(ctx, fmt.Sprintf("/groups/%s/update", state.ID.ValueString()), postData, "204 No Content")
+	_, err := r.client.Post(ctx, fmt.Sprintf("/groups/%s/update", plan.ID.ValueString()), postData, "204 No Content")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error creating group",
@@ -224,7 +226,7 @@ func (r *groupResource) Update(ctx context.Context, req resource.UpdateRequest, 
 		return
 	}
 	// /update returns no content so we need to do another read here
-	lookupResult, err := lookupGroupByIdentifier(ctx, r.client, state.ID.ValueString())
+	lookupResult, err := lookupGroupByIdentifier(ctx, r.client, plan.ID.ValueString())
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Error looking up group",
