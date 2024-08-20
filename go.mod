@@ -1,4 +1,4 @@
-module terraform-provider-someapi
+module terraform-provider-thinkplace
 
 go 1.21
 

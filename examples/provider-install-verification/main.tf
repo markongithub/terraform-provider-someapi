@@ -1,32 +1,32 @@
 terraform {
   required_providers {
-    someapi = {
-      source = "hashicorp.com/edu/someapi"
+    thinkplace = {
+      source = "hashicorp.com/edu/thinkplace"
     }
   }
 }
 
-variable "someapi_base_url" {
+variable "thinkplace_base_url" {
   type = string
 }
-variable "someapi_token" {
+variable "thinkplace_token" {
   type = string
 }
 
-provider "someapi" {
-  base_url  = var.someapi_base_url
-  api_token = var.someapi_token
+provider "thinkplace" {
+  base_url  = var.thinkplace_base_url
+  api_token = var.thinkplace_token
 }
 
-data "someapi_group" "group" {
+data "thinkplace_group" "group" {
   name = "mynewgroup"
 }
 
 output "description" {
-  value = data.someapi_group.group.description
+  value = data.thinkplace_group.group.description
 }
 
-resource "someapi_group" "other" {
+resource "thinkplace_group" "other" {
   name        = "tfgroup"
   description = "I made this with Terraform and then I changed it"
 }

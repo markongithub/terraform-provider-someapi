@@ -93,7 +93,7 @@ func (r *groupResource) Schema(_ context.Context, _ resource.SchemaRequest, resp
 
 /*
 curl -X POST \
-  --url 'https://team2.someapi.cloud/api/rest/2.0/groups/create'  \
+  --url 'https://team2.thinkplace.cloud/api/rest/2.0/groups/create'  \
 	  -H 'Accept: application/json' \
 		  -H 'Content-Type: application/json' \
 			  -H 'Authorization: Bearer bear' \
@@ -184,7 +184,7 @@ func (r *groupResource) Read(ctx context.Context, req resource.ReadRequest, resp
 
 /*
 curl -X POST \
-  --url 'https://team2.someapi.cloud/api/rest/2.0/groups/deletethisplease/update'  \
+  --url 'https://team2.thinkplace.cloud/api/rest/2.0/groups/deletethisplease/update'  \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer no' \
   --data-raw '{
@@ -246,7 +246,7 @@ func (r *groupResource) Update(ctx context.Context, req resource.UpdateRequest, 
 
 /*
 curl -X POST \
-  --url 'https://team2.someapi.cloud/api/rest/2.0/groups/deletemeplease/delete'  \
+  --url 'https://team2.thinkplace.cloud/api/rest/2.0/groups/deletemeplease/delete'  \
   -H 'Authorization: Bearer no'
   returns 204
 */

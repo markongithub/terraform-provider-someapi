@@ -35,7 +35,7 @@ type someAPIProviderModel struct {
 }
 
 func (p *SomeAPIProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
-	resp.TypeName = "someapi"
+	resp.TypeName = "thinkplace"
 	resp.Version = p.version
 }
 
